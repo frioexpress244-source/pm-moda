@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de Moda - Entrar</title>
+    <meta name="google" content="notranslate">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <div class="phone-container">
+        
+        <div id="signup" class="form-content">
+            <div class="brand-header">
+                <h1>PM <span>Moda</span></h1>
+                <h2>Criar uma conta</h2>
+                <p>Estilo & Fashion</p>
+            </div>
+            
+            <form id="form-signup">
+                <div class="input-group select-group">
+                    <i class="fa-solid fa-user-gear input-icon"></i>
+                    <select id="account-type" required>
+                        <option value="" disabled selected hidden>Tipo de conta</option>
+                        <option value="Agent">Agent</option>
+                        <option value="Administrativo">Administrativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-user input-icon"></i>
+                    <input id="name" placeholder="Nome completo" required>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fa-solid fa-phone input-icon"></i>
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+244</span>
+                        <input id="phone" type="tel" placeholder="Número de telefone" pattern="[0-9]{9}" title="Insira os 9 dígitos após o prefixo" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-calendar input-icon"></i>
+                    <input id="birthdate" type="date" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope input-icon"></i>
+                    <input id="email" type="email" placeholder="E-mail (Gmail)" required>
+                </div>
+
+                <button type="submit" class="btn-continue">Continuar</button>
+            </form>
+
+            <div class="divider">ou cadastre-se com</div>
+            <div class="social-group">
+                <i class="fa-brands fa-google social-icon"></i>
+                <i class="fa-brands fa-facebook-f social-icon"></i>
+                <i class="fa-brands fa-apple social-icon"></i>
+            </div>
+            <div class="toggle-footer">
+                Já tem uma conta? <span id="to-signin-btn">Entrar</span>
+            </div>
+        </div>
+
+        <div id="signin" class="form-content cache">
+            <div class="brand-header">
+                <h1>PM <span>Moda</span></h1>
+                <h2>Bem-vindo de volta</h2>
+                <p>Vamos continuar a sua jornada</p>
+            </div>
+            
+            <form id="form-signin">
+                <div class="input-group select-group">
+                    <i class="fa-solid fa-user-gear input-icon"></i>
+                    <select id="login-account-type" required>
+                        <option value="" disabled selected hidden>Tipo de conta</option>
+                        <option value="Agent">Agent</option>
+                        <option value="Administrativo">Administrativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-id-card input-icon"></i>
+                    <input id="login-id-service" type="text" placeholder="ID de Serviço" pattern="[0-9]{6}" title="Insira os 6 dígitos do seu ID" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-key input-icon"></i>
+                    <input id="login-codico" type="password" placeholder="Código de Acesso" pattern="[0-9]{4}" title="Insira os 4 dígitos do seu código" required>
+                    <i class="eye-icon fa-regular fa-eye-slash"></i>
+                </div>
+
+                <button type="submit" class="btn-continue">Entrar</button>
+            </form>
+
+            <div class="divider">ou entre com</div>
+            <div class="social-group">
+                <i class="fa-brands fa-google social-icon"></i>
+                <i class="fa-brands fa-facebook-f social-icon"></i>
+                <i class="fa-brands fa-apple social-icon"></i>
+            </div>
+            <div class="toggle-footer">
+                Novo por aqui? <span id="to-signup-btn">Criar uma conta</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-title">Confirmar Dados</div>
+            <div class="summary-list">
+                <div class="summary-item"><div class="summary-label">Tipo de Conta</div><div id="summary-account-type" class="summary-value">-</div></div>
+                <div class="summary-item"><div class="summary-label">Nome Completo</div><div id="summary-name" class="summary-value">-</div></div>
+                <div class="summary-item"><div class="summary-label">Telefone</div><div id="summary-phone" class="summary-value">-</div></div>
+                <div class="summary-item"><div class="summary-label">Data de Nascimento</div><div id="summary-birthdate" class="summary-value">-</div></div>
+                <div class="summary-item"><div class="summary-label">E-mail</div><div id="summary-email" class="summary-value">-</div></div>
+            </div>
+            <div id="admin-code-wrapper" class="input-group admin-code-box cache">
+                <input id="admin-secret-code" type="password" placeholder="Código Administrativo">
+            </div>
+            <div class="modal-buttons">
+            <button
+                id="btn-modal-cancel"
+                class="btn-modal btn-cancel">
+                Corrigir
+            </button>
+
+            <button
+                id="btn-modal-confirm"
+                class="btn-modal btn-confirm">
+                Confirmar
+            </button>
+        </div>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-title">Sucesso!</div>
+            <div class="success-text">Olá <span id="success-agent-name">-</span>, guarde os seus dados:</div>
+            <div class="card-credentials">
+                <div class="credential-box"><div class="credential-label">ID de Serviço</div><div id="disp-id-service">000000</div></div>
+                <div class="credential-box"><div class="credential-label">Código de Acesso</div><div id="disp-access-code">0000</div></div>
+            </div>
+            <div class="modal-buttons">
+                <button id="btn-success-later">Depois</button>
+                <button id="btn-success-now">Entrar Agora</button>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div id="error-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-title" style="color: #ff4757;">
+            <i class="fa-solid fa-circle-exclamation"></i> Erro
+        </div>
+        <div id="error-message" class="success-text" style="margin-bottom: 25px; text-align: center;">
+            </div>
+        <div class="modal-buttons">
+            <button id="btn-error-close" class="btn-modal btn-confirm">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script src="login.js"></script>
+
+<div id="loading-modal" class="modal-overlay">
+    <div class="spinner"></div>
+</div>
+
+<div id="simple-alert-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-title" style="color: #f8c22c;">Atenção</div>
+        <div class="success-text" style="text-align: center; margin: 20px 0;">
+            Por favor, insira o código.
+        </div>
+        <div class="modal-buttons">
+            <button id="btn-close-alert" class="btn-modal btn-confirm">OK</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

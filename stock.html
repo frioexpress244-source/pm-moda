@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestão de Stock</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="stock.js"></script>
+
+    <link rel="stylesheet" href="stock.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-title">
+            <h1>Gestão de Stock</h1>
+            <p>Controle de inventário e produtos</p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search" placeholder="Pesquisar produtos...">
+            </div>
+
+            <button type="button" class="btn-add" onclick="openModal()">
+                <i class="fa-solid fa-plus"></i>
+                <span>Novo Produto</span>
+            </button>
+
+        </div>
+    </header>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="stock-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Produto</th>
+                    <th>Tamanho</th>
+                    <th>Cor</th>
+                    <th>Qtd</th>
+                    <th>P. Unit</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="stock-body"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ===================== -->
+<!-- MODAL PRODUCT -->
+<!-- ===================== -->
+<div id="modal-product" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>
+                <i class="fa-solid fa-box-archive"></i>
+                Novo Produto
+            </h2>
+
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+
+        <form id="form-product">
+
+            <div class="form-group">
+                <label>Nome do Produto</label>
+                <input type="text" 
+                    id="nome" 
+                    placeholder="EX: Calça, camisa, chinela, Saia"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Tamanho</label>
+
+                <input
+                    type="text"
+                    id="tam"
+                    placeholder="Ex: XS, S, M, L, XL, XXL, Único, Todos os tamanhos"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Cor</label>
+                <input type="text" 
+                    id="cor" 
+                    placeholder="EX: Cinza, azul, branco....."
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Quantidade</label>
+                <input type="number" id="qtd" min="1" value="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Preço Unitário de compra (Kz)</label>
+                <input type="number" id="precoUnit" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Preço Unitário de venda (Kz)</label>
+                <input type="number" id="precoUnitVenda" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Despesa (AOA)</label>
+                <input type="number" id="despesa" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Código QR</label>
+
+                <select id="tipo-qr" onchange="gerenciarInput(this.value)" required>
+                    <option value="" disabled selected>Escolha uma opção...</option>
+                    <option value="automatico">Automático</option>
+                    <option value="manual">Manual</option>
+                </select>
+
+                <input
+                    type="text"
+                    id="codigo-manual"
+                    placeholder="Digite o código aqui..."
+                    style="display:none;margin-top:10px;width:100%;padding:10px;"
+                >
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn-secondary" onclick="closeModal()">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn-primary">
+                    Continuar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ===================== -->
+<!-- MODAL CONFIRM -->
+<!-- ===================== -->
+<div id="modal-confirm" class="modal">
+
+    <div class="modal-content modal-confirm-pro">
+
+        <div class="modal-header">
+            <h2>Resumo da operação</h2>
+        </div>
+
+        <div id="confirm-details"></div>
+
+        <div class="qr-box">
+            <div class="qr-title">Código QR do produto</div>
+            <div id="confirm-qr"></div>
+        </div>
+
+        <div class="modal-footer">
+
+            <button type="button" class="btn-secondary" onclick="closeConfirmModal()">
+                Editer
+            </button>
+
+            <button type="button" class="btn-primary" onclick="confirmarSalvar()">
+                Confirmer et enregistrer
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MINI MODAL VIEW -->
+<div id="view-modal" class="view-modal">
+
+    <div class="view-box">
+
+        <div id="view-content"></div>
+
+        <button
+            class="view-ok"
+            onclick="closeViewModal()"
+        >
+            OK
+        </button>
+
+    </div>
+
+</div>
+
+<script src="stock.js"></script>
+
+</body>
+</html>

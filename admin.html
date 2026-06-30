@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<div class="app-viewport">
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="header-brand">
+            <i class="fa-solid fa-bars toggle-menu"></i>
+            <h1>PM <span class="highlight-yellow">Moda</span></h1>
+        </div>
+        <i class="fa-regular fa-sun action-icon"></i>
+    </header>
+
+    <!-- COMPANY -->
+    <section class="company-profile">
+        <div class="avatar-container">
+            <div class="avatar-circle">
+                <i class="fa-solid fa-building"></i>
+            </div>
+            <span class="notification-badge"></span>
+        </div>
+
+        <div class="company-details">
+            <h2>RAVELLI <span class="highlight-yellow">WATER SYSTEMS</span></h2>
+            <p>dep2</p>
+        </div>
+    </section>
+
+    <!-- MODULES DYNAMIQUES -->
+    <main class="modules-grid"></main>
+
+    <!-- FLOAT BUTTON -->
+    <button class="floating-sync-btn" aria-label="Sincronizar">
+        <i class="fa-solid fa-rotate"></i>
+    </button>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <i class="fa-solid fa-gear settings-icon"></i>
+        <i class="fa-solid fa-circle-info info-icon"></i>
+    </footer>
+
+</div>
+
+<!-- JS -->
+<script src="admin.js"></script>
+
+</body>
+</html>
