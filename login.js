@@ -232,7 +232,7 @@
 
             } else {
                 showError(
-                    "ID ou código incorreto para mmmeste tipo de conta.",
+                    "ID ou código incorreto para este tipo de conta.",
                     "Acesso Negado"
                 );
             }
