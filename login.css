@@ -100,35 +100,139 @@ body {
     z-index: 2;
 }
 
-input, select {
-    width: 100%;
-    padding: 18px 20px 18px 50px;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    outline: none;
-    font-size: 15px;
-    color: var(--text-light);
-    background-color: var(--input-bg);
-    transition: var(--transition);
+/* =========================
+   SELECT DESIGN AMÉLIORÉ
+========================= */
+
+input,
+select{
+    width:100%;
+    height:60px;
+
+    padding:18px 56px 18px 50px;
+
+    border:1px solid #242428;
+
+    border-radius:18px;
+
+    outline:none;
+
+    font-size:15px;
+
+    font-weight:500;
+
+    color:var(--text-light);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.02),
+            rgba(255,255,255,.01)
+        ),
+        var(--input-bg);
+
+    transition:
+        border .25s ease,
+        box-shadow .25s ease,
+        transform .25s ease,
+        background .25s ease;
 }
 
-select {
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
+/* Select uniquement */
+select{
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    cursor:pointer;
+
+    color:#ffffff;
+
+    padding-right:58px;
 }
 
-.input-group::after {
-    content: '078';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    pointer-events: none;
-    font-size: 12px;
+/* Hover */
+select:hover{
+    border-color:#35353b;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(248,194,44,.04),
+            rgba(255,255,255,.02)
+        ),
+        var(--input-bg);
+}
+
+/* Focus */
+input:focus,
+select:focus{
+
+    border-color:rgba(248,194,44,.8);
+
+    box-shadow:
+        0 0 0 4px rgba(248,194,44,.10),
+        0 10px 30px rgba(0,0,0,.25);
+
+    transform:translateY(-1px);
+}
+
+/* Flèche moderne */
+.input-group.select-group::after{
+
+    content:"▼";
+
+    position:absolute;
+
+    right:20px;
+
+    top:50%;
+
+    transform:
+        translateY(-50%);
+
+    color:var(--accent-yellow);
+
+    font-size:11px;
+
+    transition:all .25s ease;
+
+    pointer-events:none;
+}
+
+/* Rotation au focus */
+.input-group.select-group:focus-within::after{
+
+    transform:
+        translateY(-50%)
+        rotate(180deg);
+
+    color:#ffd450;
+}
+
+/* Options (navigateurs compatibles) */
+select option{
+
+    background:#171719;
+
+    color:#ffffff;
+
+    padding:12px;
+}
+
+/* Placeholder du select */
+select:invalid{
+    color:#8e8e93;
+}
+
+/* Mobile */
+@media(max-width:440px){
+
+    select{
+        height:58px;
+        font-size:14px;
+    }
+
 }
 
 .input-group:not(.select-group)::after {
