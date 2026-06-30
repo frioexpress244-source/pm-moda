@@ -74,3 +74,13 @@ function goStock() {
         window.location.replace("./stock.html");
     }, 200);
 }
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+
+    // nettoyage session
+    localStorage.clear();
+
+    // redirection vers login
+    window.location.href = "index.html";
+});
+
