@@ -217,6 +217,30 @@ select:hover{
 }
 
 
+
+/* Flèche moderne */
+.input-group.select-group::after{
+
+    content:"▼";
+
+    position:absolute;
+
+    right:20px;
+
+    top:50%;
+
+    transform:
+        translateY(-50%);
+
+    color:var(--accent-yellow);
+
+    font-size:11px;
+
+    transition:all .25s ease;
+
+    pointer-events:none;
+}
+
 /* Rotation au focus */
 .input-group.select-group:focus-within::after{
 
