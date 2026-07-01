@@ -1,44 +1,82 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Verificação de sessão
-    const session = localStorage.getItem("userSession");
 
-    if (!session) {
-        window.location.href = "index.html";
-        return;
-    }
+   // 1. Vérification connexion
+const userName = localStorage.getItem("user_name");
+const userType = localStorage.getItem("user_type");
 
-    try {
-        const user = JSON.parse(session);
-        console.log("Utilisateur connecté :", user.nom_completo);
-    } catch (e) {
-        window.location.href = "index.html";
-        return;
-    }
+// Bloquer accès direct
+if (!userName || userType !== "Agent") {
+    window.location.replace("./index.html");
+    return;
+}
 
-    // 2. Definição dos módulos (Cards)
+console.log("Utilisateur connecté :", userName);
+
+    // 2. Modules
     const modules = [
-        { icon: "fa-file-invoice-dollar", label: "Faturação" },
-        { icon: "fa-clock-rotate-left", label: "Histórico" },
-        { icon: "fa-screwdriver-wrench", label: "Serviços" },
-        { icon: "fa-vault", label: "Saldo" },
-        { icon: "fa-chart-line", label: "Estatísticas" },
-        { icon: "fa-bell", label: "Notificação" },
-        { icon: "fa-boxes-stacked", label: "Stock" },
-        { icon: "fa-credit-card", label: "Pagamento" },
-        { icon: "fa-star", label: "Avaliação" },
-        { icon: "fa-spinner fa-spin", label: "Carregamento" }
+        { icon: "fa-solid fa-file-invoice-dollar", label: "Faturação" },
+        { icon: "fa-solid fa-clock-rotate-left", label: "Histórico" },
+        { icon: "fa-solid fa-screwdriver-wrench", label: "Serviços" },
+        { icon: "fa-solid fa-wallet", label: "Saldo" },
+        { icon: "fa-solid fa-bell", label: "Notificações" },
+        { icon: "fa-solid fa-tags", label: "Descontos" },
+        { icon: "fa-solid fa-credit-card", label: "Pagamentos" },
+        { icon: "fa-solid fa-star", label: "Avaliações" },
     ];
 
-    // 3. Renderização dos cards
     const gridContainer = document.querySelector(".modules-grid");
-    
+
     modules.forEach(mod => {
+
         const card = document.createElement("div");
         card.className = "grid-card";
+
         card.innerHTML = `
-            <i class="fa-solid ${mod.icon} block-icon"></i>
+            <i class="fa-solid ${mod.icon.split(" ").pop()} block-icon"></i>
             <span>${mod.label}</span>
         `;
+
+        // =========================
+        // CLICK ACTIONS
+        // =========================
+        card.addEventListener("click", () => {
+
+            // ACTION STOCK
+            if (mod.label === "Stock") {
+                goStock();
+                return;
+            }
+
+            console.log("Module:", mod.label);
+        });
+
         gridContainer.appendChild(card);
     });
+
 });
+
+
+// ================================
+// NAVIGATION STOCK
+// ================================
+function goStock() {
+
+    document.body.style.transition = "all 0.25s ease";
+    document.body.style.opacity = "0.3";
+    document.body.style.transform = "scale(0.98)";
+    document.body.style.filter = "blur(2px)";
+
+    setTimeout(() => {
+        window.location.replace("./stock.html");
+    }, 200);
+}
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+
+    // nettoyage session
+    localStorage.clear();
+
+    // redirection vers login
+    window.location.href = "index.html";
+});
+

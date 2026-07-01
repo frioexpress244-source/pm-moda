@@ -192,57 +192,61 @@
 
     document.getElementById("form-signin").addEventListener("submit", async (e) => {
         e.preventDefault();
-        
-        const accountType = document.getElementById("login-account-type").value;
-        const idService = document.getElementById("login-id-service").value;
-        const codico = document.getElementById("login-codico").value;
 
-        // CORRECTION : Définir la table selon le choix réel
-        // Assurez-vous que les noms 'agent' et 'administrativo' correspondent à vos tables dans Supabase
-        let tableName = "";
-        if (accountType === "Administrativo") {
-            tableName = "administrativo"; 
-        } else {
-            tableName = "agent";
+        const accountType = document.getElementById("login-account-type").value;
+        const idService = document.getElementById("login-id-service").value.trim();
+        const codico = document.getElementById("login-codico").value.trim();
+
+        if (!accountType || !idService || !codico) {
+            showError("Remplis tous les champs", "Erreur");
+            return;
         }
+
+        const tableName = accountType === "Administrativo" ? "administrativo" : "agent";
 
         showLoading();
 
         try {
             const { data, error } = await minhaConexaoSupabase
                 .from(tableName)
-                .select('*')
-                .eq('identifiant_service', idService)
-                .eq('codico', codico);
+                .select("*")
+                .eq("identifiant_service", idService)
+                .eq("codico", codico) // ⚠️ si agent bug → changer ici
+                .limit(1);
 
             if (error) throw error;
 
             if (data && data.length > 0) {
 
-                localStorage.setItem("user_name", data[0].nom_completo);
+                const user = data[0];
+
+                // 🔥 SAVE SESSION
+                localStorage.setItem("user_name", user.nom_completo);
                 localStorage.setItem("user_type", accountType);
 
-                // Redirection depuis index.html
-                const destination =
-                    accountType === "Administrativo"
-                        ? "./admin.html"
-                        : "./service.html";
+                // 🔥 DEBUG (très important)
+                console.log("LOGIN OK:", user);
 
-                window.location.replace(destination);
+                // 🔥 SMALL DELAY (évite fermeture instant)
+                setTimeout(() => {
+                    if (accountType === "Administrativo") {
+                        window.location.href = "./admin.html";
+                    } else {
+                        window.location.href = "./service.html";
+                    }
+                }, 200);
 
             } else {
-                showError(
-                    "ID ou código incorreto para este tipo de conta.",
-                    "Acesso Negado"
-                );
+                showError("ID ou code incorrect", "Acesso Negado");
             }
+
         } catch (err) {
-            showError(err.message, "Erro de Conexão");
+            console.error("LOGIN ERROR:", err);
+            showError(err.message, "Erro");
         } finally {
             hideLoading();
         }
     });
-
 // 1. La fonction d'affichage
     window.showError = function(message, title = "Erro") {
         const errorModal = document.getElementById('error-modal');

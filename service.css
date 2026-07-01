@@ -240,71 +240,62 @@ body {
     }
 }
 
-/* Ajustement pour que le QR code reste propre */
-.stock-table td { 
-    vertical-align: middle; 
+/* =========================
+   BOUTON DÉCONNEXION PRO
+========================= */
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:14px;
 }
 
-/* 1. Structure de base des modales (gère l'affichage plein écran) */
-.modal {
-    display: none; /* Reste caché par défaut */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fond sombre semi-transparent */
-    z-index: 1000; /* Priorité d'affichage au-dessus de tout */
-    justify-content: center;
-    align-items: center;
+/* bouton logout */
+.logout-btn{
+
+    width:40px;
+    height:40px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:#151517;
+
+    color:#ff4d4d;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:.25s ease;
+
+    font-size:16px;
 }
 
-/* 2. Contenu interne des modales */
-.modal-content {
-    background: #1e1e24; /* Couleur de fond sombre */
-    padding: 25px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto; /* Barre de défilement automatique si le texte est long */
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    border: 1px solid #333;
+/* hover */
+.logout-btn:hover{
+
+    background:#1f1f22;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
 }
 
-/* 3. En-tête et pied de page */
-.modal-header {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
+/* click */
+.logout-btn:active{
+    transform:scale(.95);
 }
 
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-    border-top: 1px solid #333;
-    padding-top: 15px;
+/* mobile */
+@media(max-width:440px){
+
+.logout-btn{
+    width:36px;
+    height:36px;
+    font-size:14px;
 }
 
-/* 4. Boutons */
-.btn-primary {
-    background: #f8c22c;
-    color: #1e1e24;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.btn-secondary {
-    background: #333;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-}

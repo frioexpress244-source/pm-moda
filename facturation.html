@@ -1,640 +1,218 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système de Facturation & POS Pro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* --- VARIABLES DE STYLE (Inspirées de Lightspeed) --- */
-        :root {
-            --bg-dark-sidebar: #0f1012;
-            --bg-light-main: #f8f9fa;
-            --bg-card-dark: #18191c;
-            --bg-item-selected: #22252a;
-            
-            --accent-blue: #0066ff;
-            --accent-green: #00aa6c;
-            --border-light: #eef0f2;
-            --border-dark: #2d3139;
-            
-            --text-dark: #1a1c1e;
-            --text-muted: #707781;
-            --text-light: #ffffff;
-            
-            --sidebar-width: 240px;
-            --cart-width: 380px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faturação </title>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        body {
-            background-color: var(--bg-light-main);
-            color: var(--text-dark);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-        }
+<style>
+/* ======================
+   RESET + BASE
+====================== */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
 
-        /* --- 1. SIDEBAR DE NAVIGATION --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--bg-dark-sidebar);
-            color: var(--text-light);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px 0;
-            transition: transform 0.3s ease;
-            z-index: 100;
-        }
+body{
+    background:#0f0f11;
+    color:#fff;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:15px;
+}
 
-        .brand {
-            padding: 0 24px 20px 24px;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            border-bottom: 1px solid var(--border-dark);
-        }
-        .brand span { color: #ff3b30; }
+/* ======================
+   CONTAINER RESPONSIVE
+====================== */
+.container{
+    width:100%;
+    max-width:520px;
+    background:#1a1a1d;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
 
-        .nav-menu {
-            list-style: none;
-            margin-top: 20px;
-            flex: 1;
-        }
+h1{
+    text-align:center;
+    color:#ffffff;
+    font-size:clamp(18px, 4vw, 24px);
+    margin-bottom:20px;
+}
 
-        .nav-item a {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 24px;
-            color: #a0a5b0;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
 
-        .nav-item.active a, .nav-item a:hover {
-            color: var(--text-light);
-            background-color: var(--bg-item-selected);
-        }
+.btn{
+    background:#1e1e21;
+    border:none;
+    padding:16px;
+    border-radius:14px;
+    color:#fff;
+    font-size:15px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:0.2s;
+    width:100%;
+}
 
-        .nav-item.active {
-            border-left: 4px solid var(--accent-blue);
-        }
+.btn i{
+    color:#f8c22c;
+}
 
-        .sidebar-footer {
-            padding: 20px 24px 0 24px;
-            border-top: 1px solid var(--border-dark);
-        }
+.btn:hover{
+    background:#2a2a2e;
+}
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
-            color: #a0a5b0;
-        }
+.section{
+    display:none;
+    margin-top:18px;
+    background:#111;
+    padding:15px;
+    border-radius:15px;
+}
 
-        /* --- 2. CONTENU CENTRAL (PRODUITS / STOCKS) --- */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: #ffffff;
-            overflow-y: auto;
-        }
+.active{
+    display:block;
+}
 
-        .main-header {
-            padding: 24px;
-            border-bottom: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
+input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    margin-top:10px;
+}
 
-        .main-header h1 { font-size: 24px; font-weight: 600; }
+button.action{
+    margin-top:10px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#f8c22c;
+    font-weight:bold;
+    cursor:pointer;
+}
 
-        .search-bar-container {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            max-width: 450px;
-        }
-
-        .search-input-wrapper {
-            position: relative;
-            flex: 1;
-        }
-
-        .search-input-wrapper i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 14px 10px 40px;
-            border: 1px solid #dcdfe4;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .stock-table-container {
-            padding: 24px;
-            flex: 1;
-        }
-
-        .stock-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        .stock-table th {
-            padding: 12px 16px;
-            color: var(--text-muted);
-            font-weight: 500;
-            font-size: 13px;
-            border-bottom: 2px solid var(--border-light);
-            text-transform: uppercase;
-        }
-
-        .stock-table td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 14px;
-        }
-
-        .stock-table clickable-row {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .stock-table tr.clickable-row:hover td {
-            background-color: #f1f3f5;
-        }
-
-        .add-btn-cell {
-            text-align: right;
-        }
-
-        .btn-add-item {
-            background-color: var(--bg-light-main);
-            border: 1px solid #dcdfe4;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .clickable-row:hover .btn-add-item {
-            background-color: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
-        }
-
-        .stock-qty { font-weight: 600; }
-        .stock-qty.low { color: #ff3b30; }
-
-        /* --- 3. PANNEAU DE FACTURATION (PANIER DROIT) --- */
-        .cart-panel {
-            width: var(--cart-width);
-            background-color: #141619;
-            color: var(--text-light);
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid var(--border-dark);
-        }
-
-        .cart-header {
-            padding: 24px;
-            border-bottom: 1px solid var(--border-dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-header h2 { font-size: 18px; font-weight: 600; }
-
-        .table-badge {
-            background-color: var(--accent-blue);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .cart-items-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-
-        .empty-cart-msg {
-            color: var(--text-muted);
-            text-align: center;
-            margin-top: 40px;
-            font-size: 14px;
-        }
-
-        .cart-item {
-            background-color: var(--bg-card-dark);
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .item-meta h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-        .item-meta span { font-size: 12px; color: var(--text-muted); }
-
-        .item-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .item-price { font-weight: 600; font-size: 15px; }
-
-        .btn-remove-item {
-            background: none;
-            border: none;
-            color: #ff3b30;
-            cursor: pointer;
-            font-size: 14px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        .btn-remove-item:hover { opacity: 1; }
-
-        .cart-summary {
-            padding: 24px;
-            background-color: var(--bg-dark-sidebar);
-            border-top: 1px solid var(--border-dark);
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #a0a5b0;
-        }
-
-        .summary-row.total {
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 1px solid var(--border-dark);
-            color: var(--text-light);
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .cart-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: filter 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn:hover { filter: brightness(1.1); }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
-
-        .btn-primary { background-color: var(--accent-blue); color: white; }
-        .btn-success { background-color: var(--accent-green); color: white; }
-
-        /* --- RESPONSIVE MOBILE BAR --- */
-        .mobile-nav-bar {
-            display: none;
-            background-color: var(--bg-dark-sidebar);
-            color: white;
-            padding: 16px;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .menu-toggle-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .cart-badge-count {
-            position: absolute;
-            top: -5px;
-            right: -8px;
-            background-color: #ff3b30;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-
-        /* --- MEDIA QUERIES RESPONSIVE --- */
-        @media (max-width: 1024px) {
-            body { flex-direction: column; overflow-x: hidden; overflow-y: auto; }
-            .mobile-nav-bar { display: flex; position: sticky; top: 0; z-index: 200; }
-            .sidebar {
-                position: fixed; left: 0; top: 56px; bottom: 0;
-                transform: translateX(-100%); box-shadow: 5px 0 15px rgba(0,0,0,0.3);
-            }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { height: auto; overflow: visible; }
-            .cart-panel {
-                width: 100%; border-left: none; border-top: 2px solid var(--border-dark);
-                display: none; /* Masqué par défaut sur mobile, s'ouvre avec l'icône caddie */
-            }
-            .cart-panel.open-mobile { display: flex; }
-            .stock-table-container { overflow-x: auto; }
-        }
-
-        @media (max-width: 540px) {
-            .main-header { flex-direction: column; align-items: flex-start; }
-            .search-bar-container { flex-direction: column; width: 100%; }
-        }
-    </style>
+</style>
 </head>
+
 <body>
 
-    <!-- Barre supérieure de navigation Mobile -->
-    <div class="mobile-nav-bar">
-        <button class="menu-toggle-btn" id="menuBtn"><i class="fa-solid fa-bars"></i></button>
-        <h3>LightSpeed POS</h3>
-        <button class="menu-toggle-btn" id="cartBtn">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span class="cart-badge-count" id="mobileCartCount">0</span>
+<div class="container">
+
+    <h1><i class="fa-solid fa-receipt"></i> Faturação </h1>
+
+    <div class="menu">
+
+        <button class="btn" onclick="openSection('scan')">
+            <i class="fa-solid fa-qrcode"></i> Escanear QR
         </button>
+
+        <button class="btn" onclick="openSection('code')">
+            <i class="fa-solid fa-keyboard"></i> Inserir código
+        </button>
+
+        <button class="btn" onclick="openSection('history')">
+            <i class="fa-solid fa-clock"></i> Histórico
+        </button>
+
     </div>
 
-    <!-- 1. SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div>
-            <div class="brand">lightspeed<span>•</span></div>
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="#"><i class="fa-solid fa-house"></i> Back office</a></li>
-                <li class="nav-item active"><a href="#"><i class="fa-solid fa-boxes-stacked"></i> Stock levels</a></li>
-                <li class="nav-item"><a href="#"><i class="fa-solid fa-bowl-food"></i> Products</a></li>
-                <li class="nav-item"><a href="#"><i class="fa-solid fa-basket-shopping"></i> Purchase</a></li>
-                <li class="nav-item"><a href="#"><i class="fa-solid fa-chart-simple"></i> Reports</a></li>
-            </ul>
-        </div>
-        <div class="sidebar-footer">
-            <div class="user-profile">
-                <i class="fa-regular fa-circle-user" style="font-size: 20px;"></i>
-                <span>Manager</span>
-            </div>
-        </div>
-    </aside>
+    <div id="scan" class="section">
+        <h3>Escanear QR Code</h3>
+        <div id="reader"></div>
+        <p id="result"></p>
+    </div>
 
-    <!-- 2. CONTENU CENTRAL (LISTE DES PRODUITS ACTIFS) -->
-    <section class="main-content">
-        <header class="main-header">
-            <div><h1>Stock levels</h1></div>
-            <div class="search-bar-container">
-                <div class="search-input-wrapper">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search for an item...">
-                </div>
-            </div>
-        </header>
+    <div id="code" class="section">
+        <h3>Inserir código</h3>
+        <input placeholder="Código do produto">
+        <button class="action">Validar</button>
+    </div>
 
-        <div class="stock-table-container">
-            <table class="stock-table">
-                <thead>
-                    <tr>
-                        <th>Item name</th>
-                        <th>Category</th>
-                        <th>Stock Qty</th>
-                        <th>Cost Price</th>
-                        <th class="add-btn-cell">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="stockTableBody">
-                    <!-- Généré dynamiquement en JS pour être opérationnel -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+    <div id="history" class="section">
+        <h3>Histórico</h3>
+        <p>Sem dados disponíveis...</p>
+    </div>
 
-    <!-- 3. PANNEAU DE CAISSE / PANIER -->
-    <aside class="cart-panel" id="cartPanel">
-        <div class="cart-header">
-            <h2>Current Order</h2>
-            <span class="table-badge">Table 1, Indoor</span>
-        </div>
+</div>
 
-        <div class="cart-items-list" id="cartItemsList">
-            <div class="empty-cart-msg">Le panier est vide. Cliquez sur un article pour l'ajouter.</div>
-        </div>
+<script>
 
-        <div class="cart-summary">
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span id="subtotalPrice">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>VAT (10%)</span>
-                <span id="vatPrice">$0.00</span>
-            </div>
-            <div class="summary-row total">
-                <span>Total Due</span>
-                <span id="totalPrice">$0.00</span>
-            </div>
+    // 🔐 PROTECTION (obligatoire service.html)
+    const user = localStorage.getItem("user_name");
+    const type = localStorage.getItem("user_type");
 
-            <div class="cart-actions">
-                <button class="btn btn-primary" id="btnClear" disabled><i class="fa-solid fa-trash"></i> Clear</button>
-                <button class="btn btn-success" id="btnCheckout" disabled><i class="fa-solid fa-credit-card"></i> Checkout</button>
-            </div>
-        </div>
-    </aside>
+    if (!user || !type) {
+        alert("Accès refusé !");
+        window.location.href = "index.html";
+    }
 
-    <!-- LOGIQUE LOGICIELLE DE FACTURATION (JAVASCRIPT) -->
-    <script>
-        // 1. Banque de données produits initiale
-        const productsData = [
-            { id: 1, name: "Tomato Juice", category: "Beverages", stock: 45, price: 3.50 },
-            { id: 2, name: "Apple Juice", category: "Beverages", stock: 8, price: 3.00 },
-            { id: 3, name: "Loch Fyne Salmon", category: "Main Courses", stock: 22, price: 18.50 },
-            { id: 4, name: "Dark Rum", category: "Spirits", stock: 14, price: 24.00 },
-            { id: 5, name: "White Wine", category: "Wines", stock: 3, price: 15.00 },
-            { id: 6, name: "Ginger Beer", category: "Beverages", stock: 60, price: 4.00 },
-            { id: 7, name: "Ribeye Steak", category: "Main Courses", stock: 12, price: 29.90 }
-        ];
+    function openSection(id){
 
-        let cart = [];
+        document.querySelectorAll(".section").forEach(sec=>{
+            sec.classList.remove("active");
+        });
 
-        // Éléments du DOM
-        const stockTableBody = document.getElementById('stockTableBody');
-        const cartItemsList = document.getElementById('cartItemsList');
-        const subtotalPrice = document.getElementById('subtotalPrice');
-        const vatPrice = document.getElementById('vatPrice');
-        const totalPrice = document.getElementById('totalPrice');
-        const btnCheckout = document.getElementById('btnCheckout');
-        const btnClear = document.getElementById('btnClear');
-        const searchInput = document.getElementById('searchInput');
-        const mobileCartCount = document.getElementById('mobileCartCount');
+        document.getElementById(id).classList.add("active");
 
-        // Rendu initial de la table de stock
-        function renderStockTable(items) {
-            stockTableBody.innerHTML = '';
-            items.forEach(product => {
-                const isLow = product.stock <= 8;
-                const tr = document.createElement('tr');
-                tr.className = 'clickable-row';
-                tr.innerHTML = `
-                    <td><strong>${product.name}</strong></td>
-                    <td style="color: var(--text-muted);">${product.category}</td>
-                    <td class="stock-qty ${isLow ? 'low' : ''}">${product.stock}</td>
-                    <td>$${product.price.toFixed(2)}</td>
-                    <td class="add-btn-cell"><button class="btn-add-item" onclick="addToCart(${product.id})">Ajouter</button></td>
-                `;
-                stockTableBody.appendChild(tr);
-            });
+        if(id === "scan"){
+            startScanner();
+        } else {
+            stopScanner();
         }
+    }
 
-        // Ajouter un élément ou incrémenter quantité
-        window.addToCart = function(id) {
-            const product = productsData.find(p => p.id === id);
-            if (!product || product.stock <= 0) return;
+    let html5Scanner;
 
-            const existingItem = cart.find(item => item.id === id);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ ...product, quantity: 1 });
+    function startScanner(){
+
+        if(html5Scanner) return;
+
+        html5Scanner = new Html5Qrcode("reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+
+            if(devices && devices.length){
+
+                let cameraId = devices[0].id;
+
+                html5Scanner.start(
+                    cameraId,
+                    { fps: 10, qrbox: 250 },
+                    (decodedText) => {
+                        document.getElementById("result").innerText = decodedText;
+                        html5Scanner.stop();
+                        html5Scanner = null;
+                    }
+                );
             }
-            updateCartUI();
-        };
+        });
+    }
 
-        // Supprimer un élément du panier
-        window.removeFromCart = function(id) {
-            cart = cart.filter(item => item.id !== id);
-            updateCartUI();
-        };
-
-        // Mettre à jour l'état visuel et les calculs financiers
-        function updateCartUI() {
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<div class="empty-cart-msg">Le panier est vide. Cliquez sur un article pour l\'ajouter.</div>';
-                btnCheckout.disabled = true;
-                btnClear.disabled = true;
-                subtotalPrice.innerText = '$0.00';
-                vatPrice.innerText = '$0.00';
-                totalPrice.innerText = '$0.00';
-                mobileCartCount.innerText = '0';
-                return;
-            }
-
-            cartItemsList.innerHTML = '';
-            let subtotal = 0;
-            let totalItemsCount = 0;
-
-            cart.forEach(item => {
-                subtotal += item.price * item.quantity;
-                totalItemsCount += item.quantity;
-
-                const card = document.createElement('div');
-                card.className = 'cart-item';
-                card.innerHTML = `
-                    <div class="item-meta">
-                        <h4>${item.name}</h4>
-                        <span>Qté: ${item.quantity} × $${item.price.toFixed(2)}</span>
-                    </div>
-                    <div class="item-right">
-                        <div class="item-price">$${(item.price * item.quantity).toFixed(2)}</div>
-                        <button class="btn-remove-item" onclick="removeFromCart(${item.id})"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                `;
-                cartItemsList.appendChild(card);
-            });
-
-            // Calculs taxes à 10%
-            const vat = subtotal * 0.10;
-            const grandTotal = subtotal + vat;
-
-            subtotalPrice.innerText = `$${subtotal.toFixed(2)}`;
-            vatPrice.innerText = `$${vat.toFixed(2)}`;
-            totalPrice.innerText = `$${grandTotal.toFixed(2)}`;
-            mobileCartCount.innerText = totalItemsCount;
-
-            btnCheckout.disabled = false;
-            btnClear.disabled = false;
+    function stopScanner(){
+        if(html5Scanner){
+            html5Scanner.stop();
+            html5Scanner = null;
         }
+    }
 
-        // Vider le panier
-        btnClear.addEventListener('click', () => {
-            cart = [];
-            updateCartUI();
-        });
+</script>
 
-        // Simuler l'encaissement de la facture
-        btnCheckout.addEventListener('click', () => {
-            alert(`💰 Facture validée avec succès !\nMontant encaissé: ${totalPrice.innerText}\nMerci de votre visite !`);
-            cart = [];
-            updateCartUI();
-            if(window.innerWidth <= 1024) {
-                document.getElementById('cartPanel').classList.remove('open-mobile');
-            }
-        });
-
-        // Système de filtrage par recherche de texte en temps réel
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = productsData.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
-            renderStockTable(filtered);
-        });
-
-        // Commandes d'ouvertures responsives (Mobile et tablettes)
-        document.getElementById('menuBtn').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('open');
-        });
-
-        document.getElementById('cartBtn').addEventListener('click', () => {
-            document.getElementById('cartPanel').classList.toggle('open-mobile');
-        });
-
-        // Lancement initial
-        renderStockTable(productsData);
-    </script>
 </body>
 </html>
