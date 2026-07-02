@@ -46,18 +46,49 @@ let html5Scanner = null;
 // =========================
 // SCANNER QR
 // =========================
-html5Scanner.start(
-    { facingMode: "environment" },
-    {
-        fps: 10,
-        qrbox: 250
-    },
-    (decodedText) => {
-        document.getElementById("result").innerText = "Résultat: " + decodedText;
-        html5Scanner.stop();
-        html5Scanner = null;
-    }
-);
+function startScanner() {
+
+    if (html5Scanner) return;
+
+    html5Scanner = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(devices => {
+
+        if (devices && devices.length) {
+
+            // 🔥 chercher caméra arrière
+            let cameraId = devices.find(d =>
+                d.label.toLowerCase().includes("back") ||
+                d.label.toLowerCase().includes("rear") ||
+                d.label.toLowerCase().includes("environment")
+            );
+
+            // fallback si pas trouvée
+            if (!cameraId) {
+                cameraId = devices[0];
+            }
+
+            html5Scanner.start(
+                cameraId.id || cameraId,
+                {
+                    fps: 10,
+                    qrbox: 250,
+                    facingMode: "environment" // 🔥 important
+                },
+                (decodedText) => {
+
+                    document.getElementById("result").innerText =
+                        "Résultat: " + decodedText;
+
+                    html5Scanner.stop();
+                    html5Scanner = null;
+                }
+            );
+        }
+    }).catch(err => {
+        console.error("Erreur caméra:", err);
+    });
+}
 
 
 // =========================
