@@ -98,9 +98,9 @@ function startScanner() {
 
                     try {
                         const { data, error } = await supabase
-                            .from("produit")
+                            .from("produtos")
                             .select("*")
-                            .eq("code", code)
+                            .eq("codigo_qr", code)
                             .maybeSingle();
 
                         if (error) {
@@ -120,12 +120,27 @@ function startScanner() {
                         }
 
                         document.getElementById("result").innerHTML = `
-                            <div style="padding:10px;">
-                                <h3>✔ Produit trouvé</h3>
-                                <p><b>Nom:</b> ${data.nom}</p>
-                                <p><b>Prix:</b> ${data.prix}</p>
-                                <p><b>Stock:</b> ${data.stock}</p>
-                            </div>
+                        <div style="padding:15px;border:1px solid #ddd;border-radius:10px;">
+
+                            <h3>✅ Produit trouvé</h3>
+
+                            <p><strong>Nom :</strong> ${data.nome}</p>
+
+                            <p><strong>Taille :</strong> ${data.tamanho}</p>
+
+                            <p><strong>Couleur :</strong> ${data.cor}</p>
+
+                            <p><strong>Quantité :</strong> ${data.quantidade}</p>
+
+                            <p><strong>Prix d'achat :</strong> ${data.preco_compra_unitario} Kz</p>
+
+                            <p><strong>Prix de vente :</strong> ${data.preco_venda_unitario} Kz</p>
+
+                            <p><strong>Bénéfice :</strong> ${data.beneficio} Kz</p>
+
+                            <p><strong>Statut :</strong> ${data.status}</p>
+
+                        </div>
                         `;
 
                         if (html5Scanner) {
