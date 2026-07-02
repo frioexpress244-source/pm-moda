@@ -1,18 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-   // 1. Vérification connexion
-const userName = localStorage.getItem("user_name");
-const userType = localStorage.getItem("user_type");
+    // =========================
+    // 1. Vérification connexion
+    // =========================
+    const userName = localStorage.getItem("user_name");
+    const userType = localStorage.getItem("user_type");
 
-// Bloquer accès direct
-if (!userName || userType !== "Agent") {
-    window.location.replace("./index.html");
-    return;
-}
+    if (!userName || userType !== "Agent") {
+        window.location.replace("./index.html");
+        return;
+    }
 
-console.log("Utilisateur connecté :", userName);
+    console.log("Utilisateur connecté :", userName);
 
+    // =========================
+    // 🔐 PROTECTION FACTURATION (AJOUTÉ)
+    // =========================
+    const allowFacturation = sessionStorage.getItem("allow_facturation");
+
+    if (window.location.pathname.includes("facturation.html") && !allowFacturation) {
+        window.location.replace("./service.html");
+        return;
+    }
+
+    // 🔥 supprimer après usage
+    if (allowFacturation) {
+        sessionStorage.removeItem("allow_facturation");
+    }
+
+    // =========================
     // 2. Modules
+    // =========================
     const modules = [
         { icon: "fa-solid fa-file-invoice-dollar", label: "Faturação" },
         { icon: "fa-solid fa-clock-rotate-left", label: "Histórico" },
@@ -26,13 +44,16 @@ console.log("Utilisateur connecté :", userName);
 
     const gridContainer = document.querySelector(".modules-grid");
 
+    if (!gridContainer) return;
+
     modules.forEach(mod => {
 
         const card = document.createElement("div");
+
         card.className = "grid-card";
 
         card.innerHTML = `
-            <i class="fa-solid ${mod.icon.split(" ").pop()} block-icon"></i>
+            <i class="${mod.icon} block-icon"></i>
             <span>${mod.label}</span>
         `;
 
@@ -41,19 +62,49 @@ console.log("Utilisateur connecté :", userName);
         // =========================
         card.addEventListener("click", () => {
 
-            // ACTION STOCK
+            // FACTURAÇÃO
+            if (mod.label === "Faturação") {
+
+                sessionStorage.setItem("allow_facturation", "1");
+
+                goFaturacao();
+
+                return;
+            }
+
+            // STOCK
             if (mod.label === "Stock") {
+
                 goStock();
+
                 return;
             }
 
             console.log("Module:", mod.label);
+
         });
 
         gridContainer.appendChild(card);
+
     });
 
 });
+
+
+// ================================
+// NAVIGATION FATURAÇÃO
+// ================================
+function goFaturacao() {
+
+    document.body.style.transition = "all .25s ease";
+    document.body.style.opacity = "0.3";
+    document.body.style.transform = "scale(.98)";
+    document.body.style.filter = "blur(2px)";
+
+    setTimeout(() => {
+        window.location.replace("./facturation.html");
+    }, 200);
+}
 
 
 // ================================
@@ -71,12 +122,14 @@ function goStock() {
     }, 200);
 }
 
-document.getElementById("logout-btn").addEventListener("click", () => {
 
-    // nettoyage session
+// ================================
+// LOGOUT
+// ================================
+document.getElementById("logout-btn")?.addEventListener("click", () => {
+
     localStorage.clear();
+    sessionStorage.clear();
+    window.location.replace("./index.html");
 
-    // redirection vers login
-    window.location.href = "index.html";
 });
-

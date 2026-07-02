@@ -1194,3 +1194,44 @@ button {
         flex: 0 0 120px; /* label fixe propre */
     }
 }
+
+#confirm-qr {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 12px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 120px;
+
+    overflow: hidden;
+
+    /* centré propre */
+    margin: 0 auto;
+    width: fit-content;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+/* barcode / svg */
+#confirm-qr svg {
+    display: block;
+
+    width: 100% !important;
+    max-width: 220px;   /* 🔥 taille réduite */
+    height: auto;
+
+    transform: scale(0.9); /* 🔥 léger réduction visuelle */
+}
+
+/* QR code (canvas ou img généré) */
+#confirm-qr img,
+#confirm-qr canvas {
+    width: 140px !important;
+    height: 140px !important;
+
+    display: block;
+    margin: auto;
+}

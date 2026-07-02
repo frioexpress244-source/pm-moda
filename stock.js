@@ -324,26 +324,50 @@ function renderDetails(data) {
 function showConfirmModal(code) {
 
     const modal = document.getElementById("modal-confirm");
-    const qr = document.getElementById("confirm-qr");
+    const container = document.getElementById("confirm-qr");
 
-    if (!modal || !qr) return;
+    container.innerHTML = "";
 
+    const tipo = getVal("tipo-qr");
+    const safeCode = (code && code.trim()) ? code.trim() : "ABC123456";
+
+    // 🔥 OUVRIR MODAL D'ABORD (TRÈS IMPORTANT)
     modal.style.display = "flex";
     modal.classList.add("show");
 
-    qr.innerHTML = "";
+    setTimeout(() => {
 
-    new QRCode(qr, {
-        text: code,
-        width: 150,
-        height: 150
-    });
+        if (tipo === "manual") {
+
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            container.appendChild(svg);
+
+            JsBarcode(svg, safeCode, {
+                format: "CODE128",
+                width: 2,
+                height: 90,
+                displayValue: true,
+                margin: 10,
+                background: "#ffffff",
+                lineColor: "#000000"
+            });
+
+        } else {
+
+            new QRCode(container, {
+                text: safeCode,
+                width: 150,
+                height: 150
+            });
+
+        }
+
+    }, 50); // 🔥 petit délai pour laisser le DOM s'afficher
+
+    // 🔥 OUVRIR MODAL ICI (très important)
+    modal.style.display = "flex";
+    modal.classList.add("show");
 }
-
-// ================================
-// HELPERS
-// ================================
-
 function getVal(id) {
     return document.getElementById(id)?.value || "";
 }
@@ -353,6 +377,7 @@ function getVal(id) {
 // ================================
 
 window.confirmarSalvar = async () => {
+    console.log("CLICK OK");
 
     try {
 

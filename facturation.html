@@ -5,118 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Faturação </title>
 <script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet" href="facturation.css">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-/* ======================
-   RESET + BASE
-====================== */
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: Arial, sans-serif;
-}
-
-body{
-    background:#0f0f11;
-    color:#fff;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:15px;
-}
-
-/* ======================
-   CONTAINER RESPONSIVE
-====================== */
-.container{
-    width:100%;
-    max-width:520px;
-    background:#1a1a1d;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.5);
-}
-
-h1{
-    text-align:center;
-    color:#ffffff;
-    font-size:clamp(18px, 4vw, 24px);
-    margin-bottom:20px;
-}
-
-.menu{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.btn{
-    background:#1e1e21;
-    border:none;
-    padding:16px;
-    border-radius:14px;
-    color:#fff;
-    font-size:15px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    transition:0.2s;
-    width:100%;
-}
-
-.btn i{
-    color:#f8c22c;
-}
-
-.btn:hover{
-    background:#2a2a2e;
-}
-
-.section{
-    display:none;
-    margin-top:18px;
-    background:#111;
-    padding:15px;
-    border-radius:15px;
-}
-
-.active{
-    display:block;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    margin-top:10px;
-}
-
-button.action{
-    margin-top:10px;
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#f8c22c;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1><i class="fa-solid fa-receipt"></i> Faturação </h1>
+    <div class="btn-card" onclick="goFaturacao()">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <span>Faturação</span>
+    </div>
 
+    <!-- MENU -->
     <div class="menu">
 
         <button class="btn" onclick="openSection('scan')">
@@ -133,18 +37,23 @@ button.action{
 
     </div>
 
+    <!-- SCAN -->
     <div id="scan" class="section">
         <h3>Escanear QR Code</h3>
-        <div id="reader"></div>
-        <p id="result"></p>
+
+        <div id="reader" style="width:100%;"></div>
+
+        <p id="result" style="margin-top:10px;color:#f8c22c;"></p>
     </div>
 
+    <!-- CODE -->
     <div id="code" class="section">
         <h3>Inserir código</h3>
         <input placeholder="Código do produto">
         <button class="action">Validar</button>
     </div>
 
+    <!-- HISTORY -->
     <div id="history" class="section">
         <h3>Histórico</h3>
         <p>Sem dados disponíveis...</p>
@@ -152,67 +61,7 @@ button.action{
 
 </div>
 
-<script>
-
-    // 🔐 PROTECTION (obligatoire service.html)
-    const user = localStorage.getItem("user_name");
-    const type = localStorage.getItem("user_type");
-
-    if (!user || !type) {
-        alert("Accès refusé !");
-        window.location.href = "index.html";
-    }
-
-    function openSection(id){
-
-        document.querySelectorAll(".section").forEach(sec=>{
-            sec.classList.remove("active");
-        });
-
-        document.getElementById(id).classList.add("active");
-
-        if(id === "scan"){
-            startScanner();
-        } else {
-            stopScanner();
-        }
-    }
-
-    let html5Scanner;
-
-    function startScanner(){
-
-        if(html5Scanner) return;
-
-        html5Scanner = new Html5Qrcode("reader");
-
-        Html5Qrcode.getCameras().then(devices => {
-
-            if(devices && devices.length){
-
-                let cameraId = devices[0].id;
-
-                html5Scanner.start(
-                    cameraId,
-                    { fps: 10, qrbox: 250 },
-                    (decodedText) => {
-                        document.getElementById("result").innerText = decodedText;
-                        html5Scanner.stop();
-                        html5Scanner = null;
-                    }
-                );
-            }
-        });
-    }
-
-    function stopScanner(){
-        if(html5Scanner){
-            html5Scanner.stop();
-            html5Scanner = null;
-        }
-    }
-
-</script>
+<script src="facturation.js"></script>
 
 </body>
-</html>
+</html> 
