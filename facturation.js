@@ -46,36 +46,18 @@ let html5Scanner = null;
 // =========================
 // SCANNER QR
 // =========================
-function startScanner() {
-
-    if (html5Scanner) return;
-
-    html5Scanner = new Html5Qrcode("reader");
-
-    Html5Qrcode.getCameras().then(devices => {
-
-        if (devices && devices.length) {
-
-            let cameraId = devices[0].id;
-
-            html5Scanner.start(
-                cameraId,
-                {
-                    fps: 10,
-                    qrbox: 250
-                },
-                (decodedText) => {
-
-                    document.getElementById("result").innerText =
-                        "Résultat: " + decodedText;
-
-                    html5Scanner.stop();
-                    html5Scanner = null;
-                }
-            );
-        }
-    });
-}
+html5Scanner.start(
+    { facingMode: "environment" },
+    {
+        fps: 10,
+        qrbox: 250
+    },
+    (decodedText) => {
+        document.getElementById("result").innerText = "Résultat: " + decodedText;
+        html5Scanner.stop();
+        html5Scanner = null;
+    }
+);
 
 
 // =========================
