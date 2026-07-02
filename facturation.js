@@ -1,3 +1,6 @@
+// =========================
+// SUPABASE CONFIG
+// =========================
 const SUPABASE_URL = "https://jiyqibvqwqomqxmgjcjb.supabase.co";
 
 const SUPABASE_ANON_KEY =
@@ -5,11 +8,19 @@ const SUPABASE_ANON_KEY =
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// =========================
+// VARIABLES GLOBALES
+// =========================
 let html5Scanner = null;
 let scanning = false;
 
+// sécurité reset
 window.addEventListener("beforeunload", () => {
     scanning = false;
+    if (html5Scanner) {
+        html5Scanner.stop().catch(() => {});
+        html5Scanner = null;
+    }
 });
 
 // =========================
@@ -25,10 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     sessionStorage.removeItem("allow_facturation");
-
     console.log("Accès facturation autorisé");
 });
-
 
 // =========================
 // SWITCH SECTION
@@ -40,9 +49,7 @@ function openSection(id) {
     });
 
     const target = document.getElementById(id);
-    if (target) {
-        target.classList.add("active");
-    }
+    if (target) target.classList.add("active");
 
     if (id === "scan") {
         startScanner();
@@ -50,7 +57,6 @@ function openSection(id) {
         stopScanner();
     }
 }
-
 
 // =========================
 // START SCANNER
@@ -75,9 +81,7 @@ function startScanner() {
                 d.label.toLowerCase().includes("environment")
             );
 
-            if (!cameraId) {
-                cameraId = devices[0];
-            }
+            if (!cameraId) cameraId = devices[0];
 
             html5Scanner.start(
                 cameraId.id || cameraId,
@@ -86,88 +90,77 @@ function startScanner() {
                     qrbox: 250,
                     facingMode: "environment"
                 },
-                async (decodedText) => {
-
-                    if (scanning) return;
-                    scanning = true;
-
-                    const code = decodedText.trim();
-
-                    document.getElementById("result").innerText =
-                        "Recherche produit: " + code;
-
-                    try {
-                        const { data, error } = await supabase
-                            .from("produtos")
-                            .select("*")
-                            .eq("codigo_qr", code)
-                            .maybeSingle();
-
-                        if (error) {
-                            console.error(error);
-                            document.getElementById("result").innerText =
-                                "❌ Erreur base de données";
-                            scanning = false;
-                            return;
-                        }
-
-                        if (!data) {
-                            document.getElementById("result").innerHTML =
-                                "❌ Produit introuvable: " + code;
-
-                            scanning = false;
-                            return;
-                        }
-
-                        document.getElementById("result").innerHTML = `
-                        <div style="padding:15px;border:1px solid #ddd;border-radius:10px;">
-
-                            <h3>✅ Produit trouvé</h3>
-
-                            <p><strong>Nom :</strong> ${data.nome}</p>
-
-                            <p><strong>Taille :</strong> ${data.tamanho}</p>
-
-                            <p><strong>Couleur :</strong> ${data.cor}</p>
-
-                            <p><strong>Quantité :</strong> ${data.quantidade}</p>
-
-                            <p><strong>Prix d'achat :</strong> ${data.preco_compra_unitario} Kz</p>
-
-                            <p><strong>Prix de vente :</strong> ${data.preco_venda_unitario} Kz</p>
-
-                            <p><strong>Bénéfice :</strong> ${data.beneficio} Kz</p>
-
-                            <p><strong>Statut :</strong> ${data.status}</p>
-
-                        </div>
-                        `;
-
-                        if (html5Scanner) {
-                            html5Scanner.stop()
-                                .then(() => {
-                                    html5Scanner = null;
-                                })
-                                .catch(() => {
-                                    html5Scanner = null;
-                                });
-                        }
-
-                    } catch (err) {
-                        console.error(err);
-                        document.getElementById("result").innerText =
-                            "❌ Erreur de recherche";
-                    }
-
-                    scanning = false;
-                }
+                onScanSuccess
             );
+
         })
-        .catch(err => {
-            console.error("Erreur caméra:", err);
-        });
+        .catch(err => console.error("Erreur caméra:", err));
 }
 
+// =========================
+// SCAN CALLBACK
+// =========================
+async function onScanSuccess(decodedText) {
+
+    if (scanning) return;
+    scanning = true;
+
+    const code = decodedText.trim();
+    const result = document.getElementById("result");
+
+    result.innerHTML = `🔍 Recherche: <b>${code}</b>`;
+
+    try {
+
+        const { data, error } = await supabase
+            .from("produtos")
+            .select("*")
+            .eq("codigo_qr", code)
+            .maybeSingle();
+
+        if (error) {
+            console.error(error);
+            result.innerHTML = "❌ Erreur base de données";
+            scanning = false;
+            return;
+        }
+
+        if (!data) {
+            result.innerHTML = `❌ Produit introuvable<br><b>${code}</b>`;
+            scanning = false;
+            return;
+        }
+
+        result.innerHTML = `
+        <div style="padding:15px;border:1px solid #ddd;border-radius:10px;background:#fff">
+
+            <h3>✅ Produit trouvé</h3>
+
+            <p><b>Nom :</b> ${data.nome}</p>
+            <p><b>Taille :</b> ${data.tamanho}</p>
+            <p><b>Couleur :</b> ${data.cor}</p>
+
+            <hr>
+
+            <p><b>Quantité :</b> ${data.quantidade}</p>
+            <p><b>Prix achat :</b> ${data.preco_compra_unitario} Kz</p>
+            <p><b>Prix vente :</b> ${data.preco_venda_unitario} Kz</p>
+            <p><b>Bénéfice :</b> ${data.beneficio} Kz</p>
+            <p><b>Status :</b> ${data.status}</p>
+
+        </div>
+        `;
+
+        // stop scanner après succès
+        stopScanner();
+
+    } catch (err) {
+        console.error(err);
+        result.innerHTML = "❌ Erreur lors de la recherche";
+    }
+
+    scanning = false;
+}
 
 // =========================
 // STOP SCANNER
