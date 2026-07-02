@@ -3,13 +3,14 @@ const SUPABASE_URL = "https://jiyqibvqwqomqxmgjcjb.supabase.co";
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppeXFpYnZxd3FvbXF4bWdqY2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMjMwMjQsImV4cCI6MjA5Nzc5OTAyNH0.5Z8LwiB-jhdGQqJ8POnFmH0YFaOaN7eWJanItfZEzrQ";
 
-// 🔥 Supabase client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🔥 variables globales
 let html5Scanner = null;
 let scanning = false;
 
+window.addEventListener("beforeunload", () => {
+    scanning = false;
+});
 
 // =========================
 // PROTECTION ACCÈS
@@ -104,6 +105,10 @@ function startScanner() {
 
                         if (error) {
                             console.error(error);
+                            document.getElementById("result").innerText =
+                                "❌ Erreur base de données";
+                            scanning = false;
+                            return;
                         }
 
                         if (!data) {
@@ -123,9 +128,15 @@ function startScanner() {
                             </div>
                         `;
 
-                        html5Scanner.stop().then(() => {
-                            html5Scanner = null;
-                        }).catch(console.error);
+                        if (html5Scanner) {
+                            html5Scanner.stop()
+                                .then(() => {
+                                    html5Scanner = null;
+                                })
+                                .catch(() => {
+                                    html5Scanner = null;
+                                });
+                        }
 
                     } catch (err) {
                         console.error(err);
@@ -136,7 +147,6 @@ function startScanner() {
                     scanning = false;
                 }
             );
-
         })
         .catch(err => {
             console.error("Erreur caméra:", err);
@@ -153,7 +163,11 @@ function stopScanner() {
         html5Scanner.stop()
             .then(() => {
                 html5Scanner = null;
+                scanning = false;
             })
-            .catch(console.error);
+            .catch(() => {
+                html5Scanner = null;
+                scanning = false;
+            });
     }
 }
